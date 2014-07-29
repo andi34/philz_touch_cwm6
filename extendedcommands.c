@@ -3400,13 +3400,27 @@ void show_philz_settings_menu()
 #endif
             case 6: {
                 ui_print(EXPAND(RECOVERY_MOD_VERSION) "\n");
-                ui_print("Build version: " EXPAND(PHILZ_BUILD) " - Blackhawk-F2FS -" EXPAND(TARGET_COMMON_NAME) "\n");
+#ifdef ENABLE_BLACKHAWK_PATCH
+#ifdef USE_F2FS
+                ui_print("Build version: " EXPAND(PHILZ_BUILD) " - Blackhawk - F2FS -" EXPAND(TARGET_COMMON_NAME) "\n");
+#else
+                ui_print("Build version: " EXPAND(PHILZ_BUILD) " - Blackhawk -" EXPAND(TARGET_COMMON_NAME) "\n");
+#endif
+#else
+#ifdef USE_F2FS
+                ui_print("Build version: " EXPAND(PHILZ_BUILD) " - F2FS -" EXPAND(TARGET_COMMON_NAME) "\n");
+#else
+                ui_print("Build version: " EXPAND(PHILZ_BUILD) " - " EXPAND(TARGET_COMMON_NAME) "\n");
+#endif
+#endif
                 ui_print("CWM Base version: " EXPAND(CWM_BASE_VERSION) "\n");
 #ifdef PHILZ_TOUCH_RECOVERY
                 print_libtouch_version(1);
 #endif
                 //ui_print(EXPAND(BUILD_DATE)"\n");
+#ifdef ENABLE_BLACKHAWK_PATCH
                 ui_print("Dual-Boot-Solution by ketut.kumajaya @XDA" "\n");
+#endif
                 ui_print("Compiled by Android-Andi @XDA" "\n");
                 ui_print("Compiled %s at %s\n", __DATE__, __TIME__);
                 break;
