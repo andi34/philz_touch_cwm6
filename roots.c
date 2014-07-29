@@ -243,6 +243,12 @@ Volume* get_device_volumes() {
     return fstab->recs;
 }
 
+static int is_datamedia = 0;
+int is_data_media()
+{
+    return is_datamedia;
+}
+
 void load_volume_table()
 {
     int i;
@@ -350,27 +356,36 @@ void load_volume_table()
         LOGW("Unable to create /etc/fstab!\n");
     }
 
-    fprintf(stderr, "recovery filesystem table\n");
-    fprintf(stderr, "=========================\n");
+    is_datamedia = 1;
+
+    printf("recovery filesystem table\n");
+    printf("=========================\n");
     for (i = 0; i < fstab->num_entries; ++i) {
         Volume* v = &fstab->recs[i];
-
-        fprintf(stderr, "  %d %s %s %s %lld\n", i, v->mount_point, v->fs_type,
+        printf("  %d %s %s %s %lld\n", i, v->mount_point, v->fs_type,
                 v->blk_device, v->length);
         if (v->blk_device2 != NULL) {
             // print extra volume table
-            fprintf(stderr, "    %s %s %s %lld\n", v->mount_point, v->fs_type2,
+            printf("    %s %s %s %lld\n", v->mount_point, v->fs_type2,
                     v->blk_device2, v->length);
         }
 
         write_fstab_entry(v, file);
+
+        // https://source.android.com/devices/tech/storage/config-example.html
+        if (strcmp(v->mount_point, "/mnt/media_rw/sdcard0") == 0 ||
+                (strcmp(v->mount_point, "/sdcard") == 0 && strcmp(v->fs_type, "datamedia") != 0) ||
+                (fs_mgr_is_voldmanaged(v) && strcmp(v->label, "sdcard0") == 0)) {
+            is_datamedia = 0;
+        }
     }
 
     if (file != NULL)
         fclose(file);
 
-    fprintf(stderr, "\n");
+    printf("\n");
 }
+
 
 Volume* volume_for_path(const char* path) {
     return fs_mgr_get_entry_for_mount_point(fstab, path);
@@ -465,41 +480,38 @@ int try_mount(const char* device, const char* mount_point, const char* fs_type, 
 - When upgrading to android 4.2, /data/media content is "migrated" to /data/media/0
 - In recovery, we force use of /data/media instead of /data/media/0 for internal storage if /data/media/.cwm_force_data_media file is found
 - For devices with pre-4.2 android support, we can define BOARD_HAS_NO_MULTIUSER_SUPPORT flag to default to /data/media, unless /data/media/0 exists
-- If we call use_migrated_storage() directly, we need to ensure_path_mounted("/data") before
-- On recovery start, no need to mount /data before as use_migrated_storage() is called by setup_data_media(mount = true)
+- If we call check_migrated_storage() directly, we need to ensure_path_mounted("/data") before
+- On recovery start, we first call load_volume_table() then setup_data_media(mount = true)
+- setup_data_media(mount = true) will mount /data, call check_migrated_storage() then unmount /data
 */
-int use_migrated_storage() {
-    struct stat s;
 #ifdef BOARD_HAS_NO_MULTIUSER_SUPPORT
-    return lstat("/data/media/0", &s) == 0 &&
-            lstat("/data/media/.cwm_force_data_media", &s) != 0;
+static int is_migrated_storage = 0;
 #else
-    return lstat("/data/media/.cwm_force_data_media", &s) != 0;
+static int is_migrated_storage = 1;
 #endif
+
+int use_migrated_storage() {
+    return is_migrated_storage;
 }
 
-int is_data_media() {
-    int i;
-    int has_sdcard = 0;
-    for (i = 0; i < get_num_volumes(); i++) {
-        Volume* vol = get_device_volumes() + i;
-        if (strcmp(vol->fs_type, "datamedia") == 0)
-            return 1;
-        if (strcmp(vol->mount_point, "/sdcard") == 0)
-            has_sdcard = 1;
-        if (fs_mgr_is_voldmanaged(vol) &&
-                (strcmp(vol->mount_point, "/storage/sdcard0") == 0))
-            has_sdcard = 1;
-    }
-    return !has_sdcard;
+static int check_migrated_storage() {
+    struct stat s;
+#ifdef BOARD_HAS_NO_MULTIUSER_SUPPORT
+    is_migrated_storage = (lstat("/data/media/0", &s) == 0 &&
+                          lstat("/data/media/.cwm_force_data_media", &s) != 0);
+#else
+    is_migrated_storage = (lstat("/data/media/.cwm_force_data_media", &s) != 0);
+#endif
+    return is_migrated_storage;
 }
 
 // load_volume_table() must have been called at this stage, so we can use ensure_path_mounted()
+// data partition must be mounted if we pass in argument mount = 0
 // setup_data_media() is either called by:
-//  - ensure_path_mounted() which will mount /data or
+//  - ensure_path_mounted() which will mount /data
 //  - on recovery start AFTER load_volume_table() AND with mount = true argument (setup_data_media(mount = true))
 //  - in show_advanced_menu() to toggle /data/media target
-//  - in show_partition_menu() after formatting whole partition to recreate the link
+//  - in show_partition_menu() and show_format_ext4_or_f2fs_menu() after format /data to recreate sdcard link
 void setup_data_media(int mount) {
     if (!is_data_media())
         return;
@@ -520,7 +532,7 @@ void setup_data_media(int mount) {
 
     int i;
     char* mount_point = "/sdcard";
-    for (i = 0; i < get_num_volumes(); i++) {
+    for (i = 0; i < get_num_volumes(); ++i) {
         Volume* vol = get_device_volumes() + i;
         if (strcmp(vol->fs_type, "datamedia") == 0) {
             mount_point = vol->mount_point;
@@ -534,7 +546,7 @@ void setup_data_media(int mount) {
 
     // support /data/media/0 (Android 4.2+)
     char* path = "/data/media";
-    if (use_migrated_storage()) {
+    if (check_migrated_storage()) {
         path = "/data/media/0";
         mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     }
