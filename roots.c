@@ -948,10 +948,16 @@ int setup_install_mounts() {
             continue;
         if (strcmp(v->mount_point, "/tmp") == 0 ||
             strcmp(v->mount_point, "/cache") == 0) {
-            if (ensure_path_mounted(v->mount_point) != 0) return -1;
+            if (ensure_path_mounted(v->mount_point) != 0) {
+                LOGE("mount error %s\n", v->mount_point);
+                return -1;
+            }
 
         } else {
-            if (ensure_path_unmounted(v->mount_point) != 0) return -1;
+            if (ensure_path_unmounted(v->mount_point) != 0) {
+                LOGE("umount error %s\n", v->mount_point);
+                return -1;
+            }
         }
     }
     return 0;
