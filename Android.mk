@@ -79,7 +79,7 @@ endif
 # This should be the same line as upstream to not break makerecoveries.sh
 RECOVERY_VERSION := $(RECOVERY_NAME) v6.0.5.0
 
-PHILZ_BUILD := 6.56.8
+PHILZ_BUILD := 6.57.2
 CWM_BASE_VERSION := $(shell echo $(RECOVERY_VERSION) | cut -d ' ' -f 3)
 LOCAL_CFLAGS += -DCWM_BASE_VERSION="$(CWM_BASE_VERSION)"
 
@@ -182,7 +182,7 @@ ifeq ($(BOARD_RECOVERY_USE_LIBTAR),true)
 LOCAL_STATIC_LIBRARIES += libtar_recovery
 endif
 
-ifeq ($(TARGET_USERIMAGES_USE_F2FS), true)
+ifeq ($(TARGET_USERIMAGES_USE_F2FS),true)
 LOCAL_CFLAGS += -DUSE_F2FS
 LOCAL_STATIC_LIBRARIES += libmake_f2fs libfsck_f2fs libfibmap_f2fs
 endif
@@ -215,7 +215,7 @@ ifneq ($(BOARD_HAS_NO_FB2PNG),true)
     RECOVERY_LINKS += fb2png
 endif
 
-ifeq ($(TARGET_USERIMAGES_USE_F2FS), true)
+ifeq ($(TARGET_USERIMAGES_USE_F2FS),true)
 RECOVERY_LINKS += mkfs.f2fs fsck.f2fs fibmap.f2fs
 endif
 
