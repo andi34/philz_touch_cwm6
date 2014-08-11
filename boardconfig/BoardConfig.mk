@@ -134,6 +134,7 @@ else ifeq ($(TARGET_PRODUCT), cm_golden)
     BOARD_HAS_LOW_RESOLUTION := true
     BRIGHTNESS_SYS_FILE := "/sys/class/backlight/panel/brightness"
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Grand Duos (i9082)
 else ifeq ($(TARGET_PRODUCT), cm_i9082)
