@@ -104,6 +104,10 @@ LOCAL_CFLAGS += -DPHILZ_BUILD="$(PHILZ_BUILD)"
 #compile date:
 #LOCAL_CFLAGS += -DBUILD_DATE="\"`date`\""
 
+ifeq ($(ENABLE_BLACKHAWK_PATCH),true)
+LOCAL_CFLAGS += -DENABLE_BLACKHAWK_PATCH
+endif
+
 ifdef PHILZ_TOUCH_RECOVERY
 ifeq ($(BOARD_USE_CUSTOM_RECOVERY_FONT),)
   BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
@@ -250,8 +254,12 @@ ALL_DEFAULT_INSTALLED_MODULES += $(RECOVERY_BUSYBOX_SYMLINKS)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libreboot_static
 LOCAL_MODULE_TAGS := optional
+ifeq ($(ENABLE_BLACKHAWK_PATCH),true)
+LOCAL_SRC_FILES := reboot.c
+else
 LOCAL_CFLAGS := -Dmain=reboot_main
 LOCAL_SRC_FILES := ../../system/core/reboot/reboot.c
+endif
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)

@@ -155,6 +155,7 @@ else ifeq ($(TARGET_DEVICE), golden)
     BOARD_HAS_LOW_RESOLUTION := true
     BRIGHTNESS_SYS_FILE := "/sys/class/backlight/panel/brightness"
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Grand Duos (i9082)
 else ifeq ($(TARGET_DEVICE), i9082)
@@ -376,6 +377,7 @@ else ifneq ($(filter $(TARGET_DEVICE),t0lte t0lteatt t0ltetmo l900 i605),)
     TARGET_SCREEN_WIDTH := 720
     BRIGHTNESS_SYS_FILE := "/sys/class/backlight/panel/brightness"
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Note 3 LTE - N9005 Unified (hlte): hltexx, hltespr, hltetmo, hltecan, hltevzw
 else ifeq ($(TARGET_DEVICE), hlte)
@@ -493,6 +495,7 @@ else ifneq ($(filter $(TARGET_DEVICE),p3100 p3110),)
     #RECOVERY_TOUCHSCREEN_SWAP_XY := true
     #RECOVERY_TOUCHSCREEN_FLIP_Y := true
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Tab 2 - p5100 / p5110
 else ifneq ($(filter $(TARGET_DEVICE),p5100 p5110),)
@@ -503,6 +506,7 @@ else ifneq ($(filter $(TARGET_DEVICE),p5100 p5110),)
     TARGET_SCREEN_WIDTH := 1280
     BRIGHTNESS_SYS_FILE := "/sys/class/backlight/panel/brightness"
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Premier I9260 - superior
 else ifeq ($(TARGET_DEVICE), superior)
@@ -543,6 +547,7 @@ else ifneq ($(filter $(TARGET_DEVICE),lt01wifi lt013g lt01lte),)
     TARGET_SCREEN_WIDTH := 800
     BRIGHTNESS_SYS_FILE := "/sys/class/backlight/panel/brightness"
     BOARD_USE_B_SLOT_PROTOCOL := true
+    ENABLE_BLACKHAWK_PATCH := true
 
 #Galaxy Tab Pro 8.4 WiFi SM-T320 (mondrianwifi)
 else ifeq ($(TARGET_DEVICE), mondrianwifi)
