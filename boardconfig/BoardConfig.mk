@@ -348,7 +348,7 @@ else ifeq ($(TARGET_DEVICE), d2lte)
 
 # Galaxy S Relay 4G - SGH-T699 (apexqtmo) // Galaxy Express AT&T (expressatt)
 # d2-common (d2lte) but with lower resolution
-else ifneq ($(filter $(TARGET_DEVICE), apexqtmo expressatt),)
+else ifneq ($(filter $(TARGET_DEVICE),apexqtmo expressatt),)
     TARGET_COMMON_NAME := $(TARGET_DEVICE)
     BOOTLOADER_CMD_ARG := "download"
     KERNEL_EXFAT_MODULE_NAME := "exfat"
@@ -648,7 +648,7 @@ else ifeq ($(TARGET_DEVICE), pico)
     BRIGHTNESS_SYS_FILE := "/sys/class/leds/lcd-backlight/brightness"
 
 #HTC One - m7 (m7ul, m7tmo, m7att) / m7spr / m7vzw
-else ifneq ($(filter $(TARGET_DEVICE), m7 m7spr m7vzw),)
+else ifneq ($(filter $(TARGET_DEVICE),m7 m7spr m7vzw),)
     TARGET_COMMON_NAME := HTC One ($(TARGET_DEVICE))
     KERNEL_EXFAT_MODULE_NAME := "exfat"
     TARGET_USERIMAGES_USE_F2FS := true
@@ -887,6 +887,14 @@ else ifeq ($(TARGET_DEVICE), falcon)
     TARGET_SCREEN_WIDTH := 720
     BRIGHTNESS_SYS_FILE := "/sys/class/leds/lcd-backlight/brightness"
 
+#Oneplus bacon, A0001 (One Plus One)
+else ifeq ($(TARGET_DEVICE), bacon)
+    TARGET_COMMON_NAME := One Plus One
+    TARGET_USERIMAGES_USE_F2FS := true
+    TARGET_SCREEN_HEIGHT := 1920
+    TARGET_SCREEN_WIDTH := 1080
+    BRIGHTNESS_SYS_FILE := "/sys/class/leds/lcd-backlight/brightness"
+
 #Oppo Find5 (find5)
 else ifeq ($(TARGET_DEVICE), find5)
     TARGET_COMMON_NAME := Oppo Find5
@@ -907,6 +915,15 @@ else ifeq ($(TARGET_DEVICE), find7)
     TARGET_SCREEN_HEIGHT := 1920
     TARGET_SCREEN_WIDTH := 1080
     BRIGHTNESS_SYS_FILE := "/sys/class/leds/lcd-backlight/brightness"
+
+#Pantech Burst (presto)
+else ifeq ($(TARGET_DEVICE), presto)
+    TARGET_COMMON_NAME := Pantech Burst P9070
+    TARGET_SCREEN_HEIGHT := 800
+    TARGET_SCREEN_WIDTH := 480
+    BOARD_HAS_LOW_RESOLUTION := true
+    BRIGHTNESS_SYS_FILE := "/sys/class/leds/lcd-backlight/brightness"
+    BATTERY_LEVEL_PATH := "/sys/class/power_supply/batterys/capacity"
 
 #Sony Xperia M (nicki)
 else ifeq ($(TARGET_DEVICE), nicki)
